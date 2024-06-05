@@ -2,14 +2,24 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
-model = pickle.load(open('Mobile_Price_Classsification_model.pkl','rb'))
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
 
 
 # Function to make predictions
 def predict_price_range(features):
-    # Make predictions
-    prediction = model.predict(features)
+    df = pd.read_csv('train.csv')
+    x = df[['battery_power', 'fc', 'four_g', 'int_memory', 'mobile_wt', 'pc', 'ram', 'sc_h', 'sc_w', 'three_g',
+                  'touch_screen']].values
+    y = df['price_range'].values
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    DTmodel = DecisionTreeClassifier(max_depth=6)
+    DTmodel.fit(x_train, y_train)
+    # random.score(x_test, y_test)
+        # Make predictions
+    prediction = DTmodel.predict(features)
     return prediction
+
 st.sidebar.title("Dashboard")
 app_mode = st.sidebar.selectbox("Select Page",["Home","About","Prediction"])
 if(app_mode=="Home"):
